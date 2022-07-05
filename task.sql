@@ -13,9 +13,9 @@ ON persons.id = greatest_total_exp.person_id
 -- 2.Which person has the greatest total end balance considering all incomes and expenses
 SELECT person_id , name , balance
 FROM (
-    SELECT exp.person_id, COALESCE(total_inc,0) - COALESCE(total_exp,0) as balance
+    SELECT COALESCE(exp.person_id, inc.person_id) as person_id, COALESCE(total_inc,0) - COALESCE(total_exp,0) as balance
     FROM (select SUM(expenses.amount) as total_exp, person_id from expenses group by person_id) as exp
-    LEFT JOIN (select SUM (incomes.amount) as total_inc, person_id from incomes group by person_id) as inc
+    FULL JOIN (select SUM (incomes.amount) as total_inc, person_id from incomes group by person_id) as inc
     ON exp.person_id = inc.person_id
     ORDER BY balance DESC 
     LIMIT 1) as heighest_balance
